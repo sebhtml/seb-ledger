@@ -66,12 +66,30 @@ int main(int argc, char ** argv)
                 selectedAccountName = argv[i + 1];
             }
         }
+        else if (option == "register")
+        {
+            command = option;
+            if (i + 1 < argc)
+            {
+                selectedAccountName = argv[i + 1];
+            }
+        }
     }
 
     std::vector<Posting> postings;
 
     if (file != "")
     {
+        // TODO: use std::list
+        std::vector<Posting> postingsForCounting;
+        
+        LedgerFile ledgerFileForCounting(file);
+        ledgerFileForCounting.getPostings(postingsForCounting);
+
+        // Reload all postings now that we know how many of them there are
+        // This is required because otherwise some pointers are invalid (the m_posting pointer in a Transaction)
+        size_t n = postingsForCounting.size();
+        postings.reserve(n);
         LedgerFile ledgerFile(file);
         ledgerFile.getPostings(postings);
     }
@@ -96,18 +114,44 @@ int main(int argc, char ** argv)
         posting.compute(accounts);
     }
 
+    // TODO use iomanip
+
     if (command == "balance")
+    {
+        for (const auto & iterator : accounts)
+        {
+            const auto & account = iterator.second;
+            const auto balance = account.getBalance();
+
+            if (
+                (selectedAccountName == "" and std::abs(balance) >= MINIMUM_BALANCE)
+                 or 
+                account.getName() == selectedAccountName)
+            {
+
+                std::cout << account.getName() << "  " << balance << " " << account.getCurrency() << std::endl;
+            }
+        }
+    }
+    else if (command == "register")
     {
         for (const auto & iterator : accounts)
         {
             const auto & account = iterator.second;
             if (selectedAccountName == "" or account.getName() == selectedAccountName)
             {
-                const auto balance = account.getBalance();
+                double balance(0);
 
-                if (std::abs(balance) >= MINIMUM_BALANCE)
+                for (const auto & transaction : account.getTransactions())
                 {
-                    std::cout << account.getName() << "  " << balance << " " << account.getCurrency() << std::endl;
+                    balance += transaction->getAmount();
+                    std::cout << transaction->getDate() << "  ";
+                    std::cout << transaction->getAccountName();
+                    std::cout << "  " << transaction->getAmount();
+                    std::cout << " " << transaction->getCurrency();
+                    std::cout << "  " << balance << " " << transaction->getCurrency();
+                    std::cout << "  " << transaction->getDescription();
+                    std::cout << std::endl;
                 }
             }
         }

@@ -46,8 +46,17 @@ double Account::getBalance() const
 }
 
 
-void Account::applyAmount(double amount)
+void Account::addTransaction(const Transaction & transaction)
 {
+    double amount = transaction.getAmount();
+
     m_balance += amount;
+    m_transactions.push_back(&transaction);
+}
+
+
+const std::vector<const Transaction *> & Account::getTransactions() const
+{
+    return m_transactions;
 }
 

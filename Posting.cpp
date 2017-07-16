@@ -83,6 +83,11 @@ double generateResult(double a, double b, const std::string & operation)
     {
         return a - b;
     }
+
+    std::cerr << "Error: invalid operation: " << operation << std::endl;
+    exit(1);
+
+    return 0;
 }
 
 bool
@@ -416,6 +421,8 @@ void Posting::parseTransaction(
 
     double amount;
 
+    // TODO always call parseMathAmount.
+
     if (isSimpleAmount)
     {
         std::istringstream amountStream(amountString);
@@ -470,7 +477,7 @@ void Posting::parseTransaction(
     }
 
     //std::cout << "DEBUG EMIT Transaction  " << accountName << "  " << amount << " " << currency << std::endl;
-    Transaction transaction(accountName, currency, amount);
+    Transaction transaction(*this, accountName, currency, amount);
     m_transactions.push_back(transaction);
 }
 
@@ -531,7 +538,7 @@ void Posting::compute(std::map<std::string, Account> & accounts)
             exit(1);
         }
 
-        account.applyAmount(amount);
+        account.addTransaction(transaction);
     }
 }
 

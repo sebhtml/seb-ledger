@@ -21,6 +21,8 @@
 #define Account_H
 
 #include <string>
+#include <vector>
+#include "Transaction.h"
 
 class Account
 {
@@ -30,13 +32,17 @@ public:
     const std::string & getName() const;
     const std::string & getCurrency() const;
     double getBalance() const;
-    void applyAmount(double amount);
+    void addTransaction(const Transaction & transaction);
+    const std::vector<const Transaction *> & getTransactions() const;
 
 private:
 
     std::string m_name;
     std::string m_currency;
     double m_balance;
+   
+    // TODO: use std::list
+    std::vector<const Transaction *> m_transactions;
 };
 
 #endif // Account_H

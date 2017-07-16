@@ -19,10 +19,13 @@
 
 
 #include "Transaction.h"
+#include "Posting.h"
 
-
-Transaction::Transaction(const std::string & accountName, const std::string & currency, const double amount)
-: m_accountName(accountName)
+Transaction::Transaction(
+    const Posting & posting,
+    const std::string & accountName, const std::string & currency, const double amount)
+: m_posting(& posting)
+, m_accountName(accountName)
 , m_currency(currency)
 , m_amount(amount)
 {
@@ -32,6 +35,17 @@ Transaction::~Transaction()
 {
 }
 
+const std::string & Transaction::getDate() const
+{
+    return m_posting->getDate();
+}
+
+
+
+const std::string & Transaction::getDescription() const
+{
+    return m_posting->getDescription();
+}
 
 const std::string & Transaction::getAccountName() const
 {

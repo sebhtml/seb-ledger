@@ -20,19 +20,27 @@
 #ifndef Transaction_H
 #define Transaction_H
 
+class Posting;
+
 #include <string>
 
 class Transaction
 {
 public:
-    Transaction(const std::string & accountName, const std::string & currency, const double amount);
+    Transaction(
+        const Posting & posting,
+        const std::string & accountName, const std::string & currency, const double amount
+        );
     ~Transaction();
     const std::string & getAccountName() const;
     const std::string & getCurrency() const;
+    const std::string & getDescription() const;
+    const std::string & getDate() const;
     double getAmount() const;
 
 private:
 
+    const Posting * m_posting;
     std::string m_accountName;
     std::string m_currency;
     double m_amount;
