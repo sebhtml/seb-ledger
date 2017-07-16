@@ -76,7 +76,21 @@ void simplify(std::vector<std::string> & equation)
 
     for (int i = 0; i < equation.size(); ++i)
     {
-        if (equation[i] == "/")
+        if (equation[i] == "(" and equation[i + 2] == ")")
+        {
+            std::vector<std::string> newEquation;
+            for (int j = 0; j < i ; ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            newEquation.push_back(equation[i + 1]);
+            for (int j = i + 3; j < equation.size(); ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            equation = newEquation;
+        }
+        else if (equation[i] == "/" and i - 1 >= 0 and equation[i - 1] != ")" and equation[i + 1] != "(")
         {
             if (i == 0)
             {
@@ -108,20 +122,71 @@ void simplify(std::vector<std::string> & equation)
             equation = newEquation;
             return;
         }
-        else if (equation[i] == "(" and equation[i + 2] == ")")
+        else if (equation[i] == "*" and i - 1 >= 0 and equation[i - 1] != ")" and equation[i + 1] != "(")
         {
+            if (i == 0)
+            {
+                // Impossible
+                return;
+            }
+
+            double left;
+            double right;
+
+            std::istringstream leftStream(equation[i - 1]);
+            std::istringstream rightStream(equation[i + 1]);
+            leftStream >> left;
+            rightStream >> right;
+            double result = left * right;
+            std::ostringstream resultStream;
+            resultStream << result;
+
             std::vector<std::string> newEquation;
-            for (int j = 0; j < i ; ++j)
+            for (int j = 0; j <= i - 2; ++j)
             {
                 newEquation.push_back(equation[j]);
             }
-            newEquation.push_back(equation[i + 1]);
-            for (int j = i + 3; j < equation.size(); ++j)
+            newEquation.push_back(resultStream.str());
+            for (int j = i + 2; j < equation.size(); ++j)
             {
                 newEquation.push_back(equation[j]);
             }
             equation = newEquation;
+            return;
         }
+        else if (equation[i] == "+" and i - 1 >= 0 and equation[i - 1] != ")" and equation[i + 1] != "(")
+        {
+            if (i == 0)
+            {
+                // Impossible
+                return;
+            }
+
+            double left;
+            double right;
+
+            std::istringstream leftStream(equation[i - 1]);
+            std::istringstream rightStream(equation[i + 1]);
+            leftStream >> left;
+            rightStream >> right;
+            double result = left + right;
+            std::ostringstream resultStream;
+            resultStream << result;
+
+            std::vector<std::string> newEquation;
+            for (int j = 0; j <= i - 2; ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            newEquation.push_back(resultStream.str());
+            for (int j = i + 2; j < equation.size(); ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            equation = newEquation;
+            return;
+        }
+
     }
 }
 
