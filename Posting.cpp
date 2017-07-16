@@ -139,13 +139,13 @@ bool simplifyEquation(std::vector<std::string> & equation,
     )
 {
     /*
-    */
     std::cout << "DEBUG simplifyEquation";
     for (const auto & i : equation)
     {
         std::cout << " " << i;
     }
     std::cout << std::endl;
+    */
 
     for (int i = 0; i < equation.size(); ++i)
     {
@@ -362,7 +362,7 @@ void Posting::parseTransaction(
     const std::map<std::string, Account> & accounts
 )
 {
-    std::cout << "DEBUG parseTransaction  transactionLine= " << transactionLine << std::endl;
+    //std::cout << "DEBUG parseTransaction  transactionLine= " << transactionLine << std::endl;
 
     std::string accountName;
 
@@ -409,7 +409,7 @@ void Posting::parseTransaction(
     if (amountString != "")
     {
         // /Find the last instance of the currency string
-        std::cout << "DEBUG Finding last occurrence of string " << currency << " in string " << amountString << std::endl;
+        //std::cout << "DEBUG Finding last occurrence of string " << currency << " in string " << amountString << std::endl;
         size_t currencyOffset = amountString.find(currency);
 
         if (currencyOffset == std::string::npos)
@@ -434,12 +434,12 @@ void Posting::parseTransaction(
         trim(amountString);
     }
 
+/*
     std::cout << "DEBUG parseTransaction transactionLine= " << transactionLine;
     std::cout << "  accountName= " << accountName;
     std::cout << "  currency= " << currency;
     std::cout << "  amountString= \"" << amountString << "\"";
     std::cout << std::endl;
-/*
 */
 
     bool isSimpleAmount(true);
