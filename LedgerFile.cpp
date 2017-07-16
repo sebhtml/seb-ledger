@@ -70,7 +70,7 @@ const
             LedgerFile ledgerFile(path + fileName);
             ledgerFile.getPostings(postings);
         }
-        else if (token == "#")
+        else if (token.length() >= 1 and token[0] == '#' or token[0] == ';')
         {
             // comment
         }

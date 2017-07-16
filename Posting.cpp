@@ -437,7 +437,7 @@ void Posting::parseTransaction(
             const auto & currency2 = iterator.first;
             const auto & balance2 = iterator.second;
 
-            if (std::abs(balance2) > 0.01)
+            if (std::abs(balance2) >= MINIMUM_BALANCE)
             {
                 if (foundUnbalancedCurrency)
                 {
@@ -498,7 +498,7 @@ void Posting::compute(std::map<std::string, Account> & accounts)
         const auto & currency = iterator.first;
         const auto & balance = iterator.second;
 
-        if (std::abs(balance) > 0.01)
+        if (std::abs(balance) >= MINIMUM_BALANCE)
         {
             std::cerr << "Error: posting " << getDate() << " " << getDescription() << " is not balanced." << std::endl;
             exit(1);

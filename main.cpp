@@ -61,5 +61,16 @@ int main(int argc, char ** argv)
     {
         posting.compute(accounts);
     }
+
+    for (const auto & iterator : accounts)
+    {
+        const auto & account = iterator.second;
+        const auto balance = account.getBalance();
+
+        if (std::abs(balance) >= MINIMUM_BALANCE)
+        {
+            std::cout << account.getName() << "  " << balance << " " << account.getCurrency() << std::endl;
+        }
+    }
 }
 
