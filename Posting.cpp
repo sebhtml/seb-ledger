@@ -65,11 +65,70 @@ void Posting::generateTransactions(
     }
 }
 
+void simplify(std::vector<std::string> & equation)
+{
+    std::cout << "DEBUG simplify";
+    for (const auto & i : equation)
+    {
+        std::cout << " " << i;
+    }
+    std::cout << std::endl;
+
+    for (int i = 0; i < equation.size(); ++i)
+    {
+        if (equation[i] == "/")
+        {
+            if (i == 0)
+            {
+                // Impossible
+                return;
+            }
+
+            double left;
+            double right;
+
+            std::istringstream leftStream(equation[i - 1]);
+            std::istringstream rightStream(equation[i + 1]);
+            leftStream >> left;
+            rightStream >> right;
+            double result = left / right;
+            std::ostringstream resultStream;
+            resultStream << result;
+
+            std::vector<std::string> newEquation;
+            for (int j = 0; j <= i - 2; ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            newEquation.push_back(resultStream.str());
+            for (int j = i + 2; j < equation.size(); ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            equation = newEquation;
+            return;
+        }
+        else if (equation[i] == "(" and equation[i + 2] == ")")
+        {
+            std::vector<std::string> newEquation;
+            for (int j = 0; j < i ; ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            newEquation.push_back(equation[i + 1]);
+            for (int j = i + 3; j < equation.size(); ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            equation = newEquation;
+        }
+    }
+}
+
 double parseMathAmount(const std::string & amountString)
 {
     std::cout << "DEBUG  parseMathAmount  amountString= " << amountString << std::endl;
 
-    double result = 0;
 
     std::ostringstream output;
     std::set<char> specialCharacters;
@@ -97,6 +156,35 @@ double parseMathAmount(const std::string & amountString)
 
     std::cout << "DEBUG parseMathAmount  input= \"" << input << "\"" << std::endl;
 
+    std::vector<std::string> equation;
+    std::istringstream inputStream(input);
+
+    while (not inputStream.eof())
+    {
+        std::string atom;
+        inputStream >> atom;
+        if (atom == "")
+        {
+            break;
+        }
+        equation.push_back(atom);
+    }
+
+    while (equation.size() != 1)
+    {
+        size_t before = equation.size();
+        simplify(equation);
+
+        if (equation.size() == before)
+        {
+            std::cerr << "Error: simplification failed, input: " << input << std::endl;
+            exit(1);
+        }
+    }
+
+    std::istringstream resultStream(equation.front());
+    double result;
+    resultStream >> result;
     return result;
 }
 
