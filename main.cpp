@@ -21,6 +21,21 @@
 #include <iostream>
 #include <algorithm>
 #include "Posting.h"
+#include <sstream>
+#include <ctime>
+#include <iomanip>
+
+std::string getTodayDate()
+{
+    time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t );
+    std::ostringstream buffer;
+    buffer << (now->tm_year + 1900) << '-';
+    buffer << std::setfill('0') << std::setw(2) << (now->tm_mon + 1) << '-';
+    buffer << std::setfill('0') << std::setw(2) << now->tm_mday;
+
+    return buffer.str();
+}
 
 int main(int argc, char ** argv)
 {
@@ -57,8 +72,17 @@ int main(int argc, char ** argv)
 
     std::cout << "DEBUG postings= " << postings.size() << std::endl;
 
+    const auto today = getTodayDate();
+
+    std::cout << "DEBUG today= " << today << std::endl;
+    
     for (auto & posting : postings)
     {
+        if (posting.getDate() > today)
+        {
+            break;
+        }
+
         posting.compute(accounts);
     }
 
