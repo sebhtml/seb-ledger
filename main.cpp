@@ -47,6 +47,8 @@ int main(int argc, char ** argv)
     }
 
     std::string file;
+    std::string command;
+    std::string selectedAccountName;
 
     for (int i = 0; i < argc; ++i)
     {
@@ -55,6 +57,14 @@ int main(int argc, char ** argv)
         if (option == "--file" and i + 1 < argc)
         {
             file = argv[i + 1];
+        }
+        else if (option == "balance")
+        {
+            command = option;
+            if (i + 1 < argc)
+            {
+                selectedAccountName = argv[i + 1];
+            }
         }
     }
 
@@ -86,14 +96,20 @@ int main(int argc, char ** argv)
         posting.compute(accounts);
     }
 
-    for (const auto & iterator : accounts)
+    if (command == "balance")
     {
-        const auto & account = iterator.second;
-        const auto balance = account.getBalance();
-
-        if (std::abs(balance) >= MINIMUM_BALANCE)
+        for (const auto & iterator : accounts)
         {
-            std::cout << account.getName() << "  " << balance << " " << account.getCurrency() << std::endl;
+            const auto & account = iterator.second;
+            if (selectedAccountName == "" or account.getName() == selectedAccountName)
+            {
+                const auto balance = account.getBalance();
+
+                if (std::abs(balance) >= MINIMUM_BALANCE)
+                {
+                    std::cout << account.getName() << "  " << balance << " " << account.getCurrency() << std::endl;
+                }
+            }
         }
     }
 }
