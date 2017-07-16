@@ -28,10 +28,12 @@ class LedgerFile
 public:
     LedgerFile(const std::string & file);
     ~LedgerFile();
-    const std::vector<Posting> & getPostings() const;
+
+    void getPostings(std::vector<Posting> & postings,
+        std::map<std::string, double> & balances) const;
 
 private:
-    std::vector<Posting> m_postings;
+    std::string m_file;
 };
 
 #endif

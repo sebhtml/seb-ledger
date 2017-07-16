@@ -29,11 +29,14 @@
 class Posting
 {
 public:
-    Posting(std::istream & stream, const std::map<std::string, double> & balances);
+    Posting(const std::string & date, const std::string & description);
     ~Posting();
-    
+    void addTransaction(const Transaction & transaction);
+
 private:
 
+    std::string m_date;
+    std::string m_description;
     std::vector<Transaction> m_transactions;
 
 };

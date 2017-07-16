@@ -18,9 +18,17 @@
  */
 
 #include "LedgerFile.h"
+#include <iostream>
 
 int main(int argc, char ** argv)
 {
+    if (argc == 1)
+    {
+        std::cout << "Usage: " << std::endl;
+        std::cout << argv[0] << " --file master-file.ledger" << std::endl;
+        return 0;
+    }
+
     std::string file;
 
     for (int i = 0; i < argc; ++i)
@@ -35,8 +43,10 @@ int main(int argc, char ** argv)
 
     if (file != "")
     {
+        std::vector<Posting> postings;
+        std::map<std::string, double> balances;
         LedgerFile ledgerFile(file);
-        const std::vector<Posting> postings = ledgerFile.getPostings();
+        ledgerFile.getPostings(postings, balances);
 
     }
 }

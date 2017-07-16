@@ -18,9 +18,13 @@
  */
 
 #include "LedgerFile.h"
+#include <iostream>
+#include <sstream>
 
 LedgerFile::LedgerFile(const std::string & file)
+: m_file(file)
 {
+    //std::cout << "DEBUG OPEN file= " << file << std::endl;
 }
 
 LedgerFile::~LedgerFile()
@@ -28,8 +32,43 @@ LedgerFile::~LedgerFile()
 }
 
 
-const std::vector<Posting> & LedgerFile::getPostings() const
+void
+LedgerFile::getPostings(std::vector<Posting> & postings,
+    std::map<std::string, double> & balances
+    ) const
 {
-    return m_postings;
+    std::ifstream stream(m_file.c_str());
+    std::string line;
+
+    std::string path = "";
+    size_t result = m_file.find_last_of('/');
+
+    if (result != std::string::npos)
+    {
+        path = m_file.substr(0, result + 1);
+    }
+
+    //std::cout << "DEBUG path= " << path << std::endl;
+
+    while (not stream.eof())
+    {
+        std::getline(stream, line);
+        //std::cout << "DEBUG file= " << m_file << " line= " << line << std::endl;
+
+        std::istringstream lineStream(line);
+        std::string token;
+        lineStream >> token;
+
+        //std::cout << "DEBUG token= " << token << std::endl;
+
+        if (token == "!include")
+        {
+            std::string fileName;
+            lineStream >> fileName;
+
+            LedgerFile ledgerFile(path + fileName);
+            ledgerFile.getPostings(postings, balances);
+        }
+    }
 }
 

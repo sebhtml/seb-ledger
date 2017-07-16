@@ -20,11 +20,19 @@
 #include "Posting.h"
 #include <map>
 
-Posting::Posting(std::istream & stream, const std::map<std::string, double> & balances)
+Posting::Posting(const std::string & date, const std::string & description)
+    : m_date(date)
+    , m_description(description)
 {
 }
 
 Posting::~Posting()
 {
+}
+
+
+void Posting::addTransaction(const Transaction & transaction)
+{
+
 }
 
