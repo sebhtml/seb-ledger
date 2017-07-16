@@ -31,8 +31,14 @@ Posting::~Posting()
 }
 
 
-void Posting::addTransaction(const Transaction & transaction)
+void Posting::addTransactionLine(const std::string & transactionLine)
 {
+    m_transactionLines.push_back(transactionLine);
+}
 
+
+bool Posting::operator<(const Posting & b) const
+{
+    return m_date < b.m_date;
 }
 

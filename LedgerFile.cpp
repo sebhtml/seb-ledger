@@ -33,9 +33,8 @@ LedgerFile::~LedgerFile()
 
 
 void
-LedgerFile::getPostings(std::vector<Posting> & postings,
-    std::map<std::string, double> & balances
-    ) const
+LedgerFile::getPostings(std::vector<Posting> & postings)
+const
 {
     std::ifstream stream(m_file.c_str());
     std::string line;
@@ -49,6 +48,8 @@ LedgerFile::getPostings(std::vector<Posting> & postings,
     }
 
     //std::cout << "DEBUG path= " << path << std::endl;
+
+    size_t numberOfInitialPostings = postings.size();
 
     while (not stream.eof())
     {
@@ -67,8 +68,54 @@ LedgerFile::getPostings(std::vector<Posting> & postings,
             lineStream >> fileName;
 
             LedgerFile ledgerFile(path + fileName);
-            ledgerFile.getPostings(postings, balances);
+            ledgerFile.getPostings(postings);
+        }
+        else if (token != "")
+        {
+            std::string date = token;
+            std::string description = lineStream.str().substr(date.length());
+            
+            //std::cout << "DEBUG Posting  date= " << date << "  description= " << description << std::endl;
+
+            Posting posting(date, description);
+
+            // Load transaction lines.
+
+            while (1)
+            {
+                std::string transactionLine;
+                std::getline(stream, transactionLine);
+        
+                bool isTransactionLine(false);
+                if (transactionLine.length() >= 1)
+                {
+                    if (transactionLine[0] == ' ' or transactionLine[0] == '\t')
+                    {
+                        std::string account;
+                        std::istringstream transactionLineStream(transactionLine);
+                        transactionLineStream >> account;
+                        if (account != "")
+                        {
+                            isTransactionLine = true;
+                        }
+                    }
+                }
+                if (isTransactionLine)
+                {
+                    posting.addTransactionLine(transactionLine);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            postings.push_back(posting);
         }
     }
+
+    size_t loadedPostings = postings.size() - numberOfInitialPostings;
+
+    std::cout << "DEBUG loaded " << loadedPostings << " postings from file " << m_file << std::endl;
 }
 

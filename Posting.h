@@ -29,14 +29,19 @@
 class Posting
 {
 public:
+
     Posting(const std::string & date, const std::string & description);
     ~Posting();
-    void addTransaction(const Transaction & transaction);
+
+    void addTransactionLine(const std::string & transactionLine);
+
+    bool operator<(const Posting & b) const;
 
 private:
 
     std::string m_date;
     std::string m_description;
+    std::vector<std::string> m_transactionLines;
     std::vector<Transaction> m_transactions;
 
 };

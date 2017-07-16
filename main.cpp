@@ -19,6 +19,7 @@
 
 #include "LedgerFile.h"
 #include <iostream>
+#include <algorithm>
 
 int main(int argc, char ** argv)
 {
@@ -41,13 +42,16 @@ int main(int argc, char ** argv)
         }
     }
 
+    std::vector<Posting> postings;
+
     if (file != "")
     {
-        std::vector<Posting> postings;
-        std::map<std::string, double> balances;
         LedgerFile ledgerFile(file);
-        ledgerFile.getPostings(postings, balances);
-
+        ledgerFile.getPostings(postings);
     }
+
+    std::sort(postings.begin(), postings.end());
+
+    std::map<std::string, double> balances;
 }
 

@@ -29,8 +29,7 @@ public:
     LedgerFile(const std::string & file);
     ~LedgerFile();
 
-    void getPostings(std::vector<Posting> & postings,
-        std::map<std::string, double> & balances) const;
+    void getPostings(std::vector<Posting> & postings) const;
 
 private:
     std::string m_file;
