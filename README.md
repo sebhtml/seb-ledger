@@ -27,7 +27,19 @@ Posting with mathematical equations
 
 Posting with a account balance query
 ------------------------------------
-2017-07-15
-    mortgage  (special*0.03)
-    auto
 
+```
+2017-07-15
+    mortgage  (mortgage*0.03)
+    auto
+```
+
+
+Commands
+--------
+
+```
+seb-ledger --file ledger-files/master.ledger balance
+seb-ledger --file ledger-files/master.ledger balance seb-receivables-from-joe-CAD
+seb-ledger --file ledger-files/master.ledger register seb-receivables-from-joe-CAD
+```
