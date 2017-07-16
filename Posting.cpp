@@ -65,6 +65,70 @@ void Posting::generateTransactions(
     }
 }
 
+double generateResult(double a, double b, const std::string & operation)
+{
+    if (operation == "*")
+    {
+        return a * b;
+    }
+    if (operation == "/")
+    {
+        return a / b;
+    }
+    if (operation == "+")
+    {
+        return a + b;
+    }
+    if (operation == "-")
+    {
+        return a - b;
+    }
+}
+
+bool
+simplifyOperation(const std::string & operation,
+    std::vector<std::string> & equation, size_t start, size_t end
+)
+{
+    for (int i = start; i <= end; ++i)
+    {
+        if (equation[i] == operation and i - 1 >= 0 and equation[i - 1] != ")" and equation[i + 1] != "(")
+        {
+            if (i == 0)
+            {
+                // Impossible
+                continue;
+            }
+
+            double left;
+            double right;
+
+            std::istringstream leftStream(equation[i - 1]);
+            std::istringstream rightStream(equation[i + 1]);
+            leftStream >> left;
+            rightStream >> right;
+            double result = generateResult(left, right, operation);
+            std::ostringstream resultStream;
+            resultStream << result;
+
+            std::vector<std::string> newEquation;
+            for (int j = 0; j <= i - 2; ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            newEquation.push_back(resultStream.str());
+            for (int j = i + 2; j < equation.size(); ++j)
+            {
+                newEquation.push_back(equation[j]);
+            }
+            equation = newEquation;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void simplify(std::vector<std::string> & equation)
 {
     std::cout << "DEBUG simplify";
@@ -89,104 +153,68 @@ void simplify(std::vector<std::string> & equation)
                 newEquation.push_back(equation[j]);
             }
             equation = newEquation;
-        }
-        else if (equation[i] == "/" and i - 1 >= 0 and equation[i - 1] != ")" and equation[i + 1] != "(")
-        {
-            if (i == 0)
-            {
-                // Impossible
-                return;
-            }
-
-            double left;
-            double right;
-
-            std::istringstream leftStream(equation[i - 1]);
-            std::istringstream rightStream(equation[i + 1]);
-            leftStream >> left;
-            rightStream >> right;
-            double result = left / right;
-            std::ostringstream resultStream;
-            resultStream << result;
-
-            std::vector<std::string> newEquation;
-            for (int j = 0; j <= i - 2; ++j)
-            {
-                newEquation.push_back(equation[j]);
-            }
-            newEquation.push_back(resultStream.str());
-            for (int j = i + 2; j < equation.size(); ++j)
-            {
-                newEquation.push_back(equation[j]);
-            }
-            equation = newEquation;
             return;
         }
-        else if (equation[i] == "*" and i - 1 >= 0 and equation[i - 1] != ")" and equation[i + 1] != "(")
+    }
+    
+    size_t start = 0;
+    size_t end = equation.size() - 1;
+
+    size_t parenthesisCounter(0);
+    size_t max(0);
+    bool closed = true;
+
+    for (size_t i = 0; i < equation.size(); ++i)
+    {
+        if (equation[i] == "(")
         {
-            if (i == 0)
+            ++parenthesisCounter;
+            if (parenthesisCounter > max)
             {
-                // Impossible
-                return;
+                start = i;
+                max = parenthesisCounter;
+                closed = false;
             }
-
-            double left;
-            double right;
-
-            std::istringstream leftStream(equation[i - 1]);
-            std::istringstream rightStream(equation[i + 1]);
-            leftStream >> left;
-            rightStream >> right;
-            double result = left * right;
-            std::ostringstream resultStream;
-            resultStream << result;
-
-            std::vector<std::string> newEquation;
-            for (int j = 0; j <= i - 2; ++j)
-            {
-                newEquation.push_back(equation[j]);
-            }
-            newEquation.push_back(resultStream.str());
-            for (int j = i + 2; j < equation.size(); ++j)
-            {
-                newEquation.push_back(equation[j]);
-            }
-            equation = newEquation;
-            return;
         }
-        else if (equation[i] == "+" and i - 1 >= 0 and equation[i - 1] != ")" and equation[i + 1] != "(")
+        else if (equation[i] == ")")
         {
-            if (i == 0)
+            if (not closed)
             {
-                // Impossible
-                return;
+                end = i;
+                closed = true;
             }
-
-            double left;
-            double right;
-
-            std::istringstream leftStream(equation[i - 1]);
-            std::istringstream rightStream(equation[i + 1]);
-            leftStream >> left;
-            rightStream >> right;
-            double result = left + right;
-            std::ostringstream resultStream;
-            resultStream << result;
-
-            std::vector<std::string> newEquation;
-            for (int j = 0; j <= i - 2; ++j)
-            {
-                newEquation.push_back(equation[j]);
-            }
-            newEquation.push_back(resultStream.str());
-            for (int j = i + 2; j < equation.size(); ++j)
-            {
-                newEquation.push_back(equation[j]);
-            }
-            equation = newEquation;
-            return;
+            --parenthesisCounter;
         }
+    }
 
+    std::cout << "DEBUG start= " << start << "  end= " << end << std::endl;
+
+    std::string operation;
+
+    for (size_t i = start; i <= end; i++)
+    {
+        if (equation[i] == "*" or equation[i] == "/")
+        {
+            operation = equation[i];
+            break;
+        }
+    }
+
+    if (operation == "")
+    {
+        for (size_t i = start; i <= end; i++)
+        {
+            if (equation[i] == "+" or equation[i] == "-")
+            {
+                operation = equation[i];
+                break;
+            }
+        }
+    }
+
+    if (simplifyOperation(operation, equation, start, end))
+    {
+        return;
     }
 }
 
