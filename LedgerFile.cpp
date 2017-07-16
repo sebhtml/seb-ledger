@@ -33,7 +33,7 @@ LedgerFile::~LedgerFile()
 
 
 void
-LedgerFile::getPostings(std::vector<Posting> & postings)
+LedgerFile::getPostings(std::list<Posting> & postings)
 const
 {
     std::ifstream stream(m_file.c_str());

@@ -37,6 +37,11 @@ std::string getTodayDate()
     return buffer.str();
 }
 
+bool comparator(const Posting * a, const Posting * b)
+{
+    return *a < *b;
+}
+
 int main(int argc, char ** argv)
 {
     if (argc == 1)
@@ -76,25 +81,21 @@ int main(int argc, char ** argv)
         }
     }
 
-    std::vector<Posting> postings;
+    std::list<Posting> postings_;
 
     if (file != "")
     {
-        // TODO: use std::list
-        std::vector<Posting> postingsForCounting;
-        
-        LedgerFile ledgerFileForCounting(file);
-        ledgerFileForCounting.getPostings(postingsForCounting);
-
-        // Reload all postings now that we know how many of them there are
-        // This is required because otherwise some pointers are invalid (the m_posting pointer in a Transaction)
-        size_t n = postingsForCounting.size();
-        postings.reserve(n);
         LedgerFile ledgerFile(file);
-        ledgerFile.getPostings(postings);
+        ledgerFile.getPostings(postings_);
     }
 
-    std::sort(postings.begin(), postings.end());
+    std::vector<Posting *> postings;
+    for (auto & posting : postings_)
+    {
+        postings.push_back(&posting);
+    }
+
+    std::sort(postings.begin(), postings.end(), comparator);
 
     std::map<std::string, Account> accounts;
 
@@ -106,12 +107,12 @@ int main(int argc, char ** argv)
     
     for (auto & posting : postings)
     {
-        if (posting.getDate() > today)
+        if (posting->getDate() > today)
         {
             break;
         }
 
-        posting.compute(accounts);
+        posting->compute(accounts);
     }
 
     // TODO use iomanip
