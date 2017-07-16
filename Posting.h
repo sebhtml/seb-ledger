@@ -46,6 +46,11 @@ private:
         const std::map<std::string, Account> & accounts
     );
 
+    void parseTransaction(
+            const std::string & transactionLine,
+            const std::map<std::string, Account> & accounts
+            );
+
     size_t m_id;
     std::string m_date;
     std::string m_description;

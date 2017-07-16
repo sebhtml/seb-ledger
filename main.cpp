@@ -55,6 +55,8 @@ int main(int argc, char ** argv)
 
     std::map<std::string, Account> accounts;
 
+    std::cout << "DEBUG postings= " << postings.size() << std::endl;
+
     for (auto & posting : postings)
     {
         posting.compute(accounts);

@@ -70,12 +70,16 @@ const
             LedgerFile ledgerFile(path + fileName);
             ledgerFile.getPostings(postings);
         }
+        else if (token == "#")
+        {
+            // comment
+        }
         else if (token != "")
         {
             std::string date = token;
             std::string description = lineStream.str().substr(date.length());
             
-            //std::cout << "DEBUG Posting  date= " << date << "  description= " << description << std::endl;
+            std::cout << "DEBUG Posting  date= " << date << "  description= " << description << std::endl;
 
             size_t id = postings.size();
 
