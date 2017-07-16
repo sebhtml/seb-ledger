@@ -20,6 +20,7 @@
 #include "LedgerFile.h"
 #include <iostream>
 #include <algorithm>
+#include "Posting.h"
 
 int main(int argc, char ** argv)
 {
@@ -52,6 +53,11 @@ int main(int argc, char ** argv)
 
     std::sort(postings.begin(), postings.end());
 
-    std::map<std::string, double> balances;
+    std::map<std::string, Account> accounts;
+
+    for (auto & posting : postings)
+    {
+        posting.compute(accounts);
+    }
 }
 

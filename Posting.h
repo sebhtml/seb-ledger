@@ -21,7 +21,7 @@
 #define Posting_H
 
 #include "Transaction.h"
-
+#include "Account.h"
 #include <map>
 #include <fstream>
 #include <vector>
@@ -36,6 +36,8 @@ public:
     void addTransactionLine(const std::string & transactionLine);
 
     bool operator<(const Posting & b) const;
+
+    void compute(std::map<std::string, Account> & accounts);
 
 private:
 

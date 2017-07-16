@@ -17,41 +17,26 @@
 
  */
 
-#include "Posting.h"
-#include <map>
+#ifndef Account_H
+#define Account_H
 
-Posting::Posting(
-    size_t id, const std::string & date, const std::string & description)
-    : m_id(id)
-    , m_date(date)
-    , m_description(description)
+#include <string>
+
+class Account
 {
-}
+public:
+    Account(const std::string & name, const std::string & currency);
+    ~Account();
+    const std::string & getName() const;
+    const std::string & getCurrency() const;
+    double getBalance() const;
 
-Posting::~Posting()
-{
-}
+private:
 
+    std::string m_name;
+    std::string m_currency;
+    double m_balance;
+};
 
-void Posting::addTransactionLine(const std::string & transactionLine)
-{
-    m_transactionLines.push_back(transactionLine);
-}
-
-
-bool Posting::operator<(const Posting & b) const
-{
-    if (m_date == b.m_date)
-    {
-        return m_id < b.m_id;
-    }
-
-    return m_date < b.m_date;
-}
-
-
-void Posting::compute(std::map<std::string, Account> & accounts)
-{
-
-}
+#endif // Account_H
 

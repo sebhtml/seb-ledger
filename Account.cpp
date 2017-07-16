@@ -17,41 +17,31 @@
 
  */
 
-#include "Posting.h"
-#include <map>
+#include "Account.h"
 
-Posting::Posting(
-    size_t id, const std::string & date, const std::string & description)
-    : m_id(id)
-    , m_date(date)
-    , m_description(description)
+Account::Account(const std::string & name, const std::string & currency)
+: m_name(name)
+, m_currency(currency)
+, m_balance(0)
 {
 }
 
-Posting::~Posting()
+Account::~Account()
 {
 }
 
-
-void Posting::addTransactionLine(const std::string & transactionLine)
+const std::string & Account::getName() const
 {
-    m_transactionLines.push_back(transactionLine);
+    return m_name;
 }
 
-
-bool Posting::operator<(const Posting & b) const
+const std::string & Account::getCurrency() const
 {
-    if (m_date == b.m_date)
-    {
-        return m_id < b.m_id;
-    }
-
-    return m_date < b.m_date;
+    return m_currency;
 }
 
-
-void Posting::compute(std::map<std::string, Account> & accounts)
+double Account::getBalance() const
 {
-
+    return m_balance;
 }
 
