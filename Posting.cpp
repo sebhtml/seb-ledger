@@ -134,36 +134,62 @@ simplifyOperation(const std::string & operation,
     return false;
 }
 
-void simplify(std::vector<std::string> & equation)
+bool simplifyEquation(std::vector<std::string> & equation,
+    const std::map<std::string, Account> & accounts
+    )
 {
     /*
-    std::cout << "DEBUG simplify";
+    */
+    std::cout << "DEBUG simplifyEquation";
     for (const auto & i : equation)
     {
         std::cout << " " << i;
     }
     std::cout << std::endl;
-    */
 
     for (int i = 0; i < equation.size(); ++i)
     {
-        if (equation[i] == "(" and equation[i + 2] == ")")
+        // Fetch account balance
+        if (accounts.count(equation[i]))
         {
-            std::vector<std::string> newEquation;
+            std::vector<std::string> newequation;
             for (int j = 0; j < i ; ++j)
             {
-                newEquation.push_back(equation[j]);
+                newequation.push_back(equation[j]);
             }
-            newEquation.push_back(equation[i + 1]);
+
+            std::ostringstream accountBalanceStream;
+            accountBalanceStream << accounts.at(equation[i]).getBalance();
+            std::string accountBalance = accountBalanceStream.str();
+            newequation.push_back(accountBalance);
+            for (int j = i + 1; j < equation.size(); ++j)
+            {
+                newequation.push_back(equation[j]);
+            }
+            equation = newequation;
+            return true;
+
+        }
+
+        // Remove parentheses
+        if (equation[i] == "(" and equation[i + 2] == ")")
+        {
+            std::vector<std::string> newequation;
+            for (int j = 0; j < i ; ++j)
+            {
+                newequation.push_back(equation[j]);
+            }
+
+            newequation.push_back(equation[i + 1]);
             for (int j = i + 3; j < equation.size(); ++j)
             {
-                newEquation.push_back(equation[j]);
+                newequation.push_back(equation[j]);
             }
-            equation = newEquation;
-            return;
+            equation = newequation;
+            return true;
         }
     }
-    
+
     size_t start = 0;
     size_t end = equation.size() - 1;
 
@@ -221,11 +247,16 @@ void simplify(std::vector<std::string> & equation)
 
     if (simplifyOperation(operation, equation, start, end))
     {
-        return;
+        return true;
     }
+
+    return false;
 }
 
-double parseMathAmount(const std::string & amountString)
+double parseAmount(const std::string & amountString,
+    const std::map<std::string, Account> & accounts,
+    const std::set<char> & simpleAmountCharacters
+)
 {
     //std::cout << "DEBUG  parseMathAmount  amountString= " << amountString << std::endl;
 
@@ -242,7 +273,28 @@ double parseMathAmount(const std::string & amountString)
     for (size_t i = 0; i < amountString.length(); ++i)
     {
         char character = amountString[i];
-        if (specialCharacters.count(character))
+        bool previousIsNumberCharacter(true);
+        bool nextIsNumberCharacter(true);
+
+        if (character == '-' and i != 0)
+        {
+            char previousCharacter = amountString[i - 1];
+            if (previousCharacter != '-' and
+                not simpleAmountCharacters.count(previousCharacter))
+            {
+                previousIsNumberCharacter = false;
+            }
+        }
+        if (character == '-' and i != amountString.length() - 1)
+        {
+            char nextCharacter = amountString[i + 1];
+            if (not simpleAmountCharacters.count(nextCharacter))
+            {
+                nextIsNumberCharacter = false;
+            }
+        }
+
+        if (previousIsNumberCharacter and nextIsNumberCharacter and specialCharacters.count(character))
         {
             output << " " << character << " ";
         }
@@ -272,10 +324,9 @@ double parseMathAmount(const std::string & amountString)
 
     while (1)
     {
-        size_t before = equation.size();
-        simplify(equation);
+        bool result = simplifyEquation(equation, accounts);
 
-        if (equation.size() == before)
+        if (not result)
         {
             if (equation.size() == 1)
             {
@@ -293,12 +344,25 @@ double parseMathAmount(const std::string & amountString)
     return result;
 }
 
+void trim(std::string & amountString)
+{
+    // Trim
+    while (amountString.length() >= 1 and amountString[0] == ' ' or amountString[0] == '\t')
+    {
+        amountString = amountString.substr(1);
+    }
+    while (amountString.length() >= 1 and amountString[amountString.length() - 1] == ' ' or amountString[amountString.length() - 1] == '\t')
+    {
+        amountString = amountString.substr(0, amountString.length() - 1);
+    }
+}
+
 void Posting::parseTransaction(
     const std::string & transactionLine,
     const std::map<std::string, Account> & accounts
 )
 {
-    //std::cout << "DEBUG parseTransaction  transactionLine= " << transactionLine << std::endl;
+    std::cout << "DEBUG parseTransaction  transactionLine= " << transactionLine << std::endl;
 
     std::string accountName;
 
@@ -335,27 +399,47 @@ void Posting::parseTransaction(
         }
     }
 
+
     std::string amountString = transactionLine;
+
     amountString.replace(amountString.find(accountName), accountName.length(), "");
-    amountString.replace(amountString.find(currency), currency.length(), "");
-    
 
-    // Trim
-    while (amountString.length() >= 1 and amountString[0] == ' ' or amountString[0] == '\t')
+    trim(amountString);
+
+    if (amountString != "")
     {
-        amountString = amountString.substr(1);
-    }
-    while (amountString.length() >= 1 and amountString[amountString.length() - 1] == ' ' or amountString[amountString.length() - 1] == '\t')
-    {
-        amountString = amountString.substr(0, amountString.length() - 1);
+        // /Find the last instance of the currency string
+        std::cout << "DEBUG Finding last occurrence of string " << currency << " in string " << amountString << std::endl;
+        size_t currencyOffset = amountString.find(currency);
+
+        if (currencyOffset == std::string::npos)
+        {
+            std::cout << "Error: amountString has no currency string" << std::endl;
+            exit(1);
+        }
+
+        while (1)
+        {
+            size_t nextCurrencyOffset = amountString.find(currency, currencyOffset + currency.length());
+            //std::cout << "DEBUG nextCurrencyOffset= " << nextCurrencyOffset << std::endl;
+            if (nextCurrencyOffset == std::string::npos)
+            {
+                break;
+            }
+            currencyOffset = nextCurrencyOffset;
+        }
+
+        amountString.replace(currencyOffset, currency.length(), "");
+
+        trim(amountString);
     }
 
-/*
     std::cout << "DEBUG parseTransaction transactionLine= " << transactionLine;
     std::cout << "  accountName= " << accountName;
     std::cout << "  currency= " << currency;
     std::cout << "  amountString= \"" << amountString << "\"";
     std::cout << std::endl;
+/*
 */
 
     bool isSimpleAmount(true);
@@ -426,7 +510,6 @@ void Posting::parseTransaction(
 
     double amount;
 
-    // TODO always call parseMathAmount.
 
     if (isSimpleAmount)
     {
@@ -477,8 +560,7 @@ void Posting::parseTransaction(
     }
     else
     {
-        amount = parseMathAmount(amountString);
-
+        amount = parseAmount(amountString, accounts, simpleAmountCharacters);
     }
 
     //std::cout << "DEBUG EMIT Transaction  " << accountName << "  " << amount << " " << currency << std::endl;

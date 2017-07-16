@@ -115,7 +115,14 @@ int main(int argc, char ** argv)
         posting->compute(accounts);
     }
 
-    // TODO use iomanip
+    // Find longuest account name
+    size_t maxLength = 0;
+    for (const auto & iterator : accounts)
+    {
+        const auto & account = iterator.second;
+        size_t length = account.getName().length();
+        maxLength = std::max(length, maxLength);
+    }
 
     if (command == "balance")
     {
@@ -130,7 +137,9 @@ int main(int argc, char ** argv)
                 account.getName() == selectedAccountName)
             {
 
-                std::cout << account.getName() << "  " << balance << " " << account.getCurrency() << std::endl;
+                std::cout << std::left << std::setfill(' ') << std::setw(maxLength) << account.getName();
+                std::cout << "  " << std::right << std::setw(9) << std::fixed << std::setprecision(2) << balance;
+                std::cout << " " << account.getCurrency() << std::endl;
             }
         }
     }
@@ -145,6 +154,7 @@ int main(int argc, char ** argv)
 
                 for (const auto & transaction : account.getTransactions())
                 {
+                    // TODO: use iomanip
                     balance += transaction->getAmount();
                     std::cout << transaction->getDate() << "  ";
                     std::cout << transaction->getAccountName();
