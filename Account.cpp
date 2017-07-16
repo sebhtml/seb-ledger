@@ -45,3 +45,9 @@ double Account::getBalance() const
     return m_balance;
 }
 
+
+void Account::applyAmount(double amount)
+{
+    m_balance += amount;
+}
+

@@ -30,6 +30,7 @@ public:
     const std::string & getName() const;
     const std::string & getCurrency() const;
     double getBalance() const;
+    void applyAmount(double amount);
 
 private:
 

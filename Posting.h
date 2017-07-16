@@ -36,10 +36,15 @@ public:
     void addTransactionLine(const std::string & transactionLine);
 
     bool operator<(const Posting & b) const;
-
+    const std::string & getDate() const;
+    const std::string & getDescription() const;
     void compute(std::map<std::string, Account> & accounts);
 
 private:
+
+    void generateTransactions(
+        const std::map<std::string, Account> & accounts
+    );
 
     size_t m_id;
     std::string m_date;

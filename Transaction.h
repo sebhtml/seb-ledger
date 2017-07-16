@@ -25,14 +25,17 @@
 class Transaction
 {
 public:
-    Transaction(const std::string & account, const double amount, const std::string & currency);
+    Transaction(const std::string & accountName, const std::string & currency, const double amount);
     ~Transaction();
+    const std::string & getAccountName() const;
+    const std::string & getCurrency() const;
+    double getAmount() const;
 
 private:
 
-    std::string m_account;
-    double m_amount;
+    std::string m_accountName;
     std::string m_currency;
+    double m_amount;
 };
 
 #endif // Transaction_H

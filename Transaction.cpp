@@ -21,10 +21,30 @@
 #include "Transaction.h"
 
 
-Transaction::Transaction(const std::string & account, const double amount, const std::string & currency)
+Transaction::Transaction(const std::string & accountName, const std::string & currency, const double amount)
+: m_accountName(accountName)
+, m_currency(currency)
+, m_amount(amount)
 {
 }
 
 Transaction::~Transaction()
 {
 }
+
+
+const std::string & Transaction::getAccountName() const
+{
+    return m_accountName;
+}
+
+const std::string & Transaction::getCurrency() const
+{
+    return m_currency;
+}
+
+double Transaction::getAmount() const
+{
+    return m_amount;
+}
+

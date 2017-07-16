@@ -19,6 +19,8 @@
 
 #include "Posting.h"
 #include <map>
+#include <iostream>
+#include <cmath>
 
 Posting::Posting(
     size_t id, const std::string & date, const std::string & description)
@@ -49,9 +51,79 @@ bool Posting::operator<(const Posting & b) const
     return m_date < b.m_date;
 }
 
-
-void Posting::compute(std::map<std::string, Account> & accounts)
+void Posting::generateTransactions(
+    const std::map<std::string, Account> & accounts
+)
 {
 
 }
 
+void Posting::compute(std::map<std::string, Account> & accounts)
+{
+    generateTransactions(accounts);
+
+    if (not (m_transactions.size() >= 2))
+    {
+        std::cerr << "Error: posting " << getDate() << " " << getDescription() << " has only ";
+        std::cerr << m_transactions.size() << " transactions" << std::endl;
+        exit(1);
+    }
+
+    // Check that posting is balanced.
+    std::map<std::string, double> balances;
+    for (const auto & transaction : m_transactions)
+    {
+        const auto & accountName = transaction.getAccountName();
+        const auto & currency = transaction.getCurrency();
+        const auto amount = transaction.getAmount();
+        balances[currency] += amount;
+    }
+
+    for (const auto & iterator : balances)
+    {
+        const auto & currency = iterator.first;
+        const auto & balance = iterator.second;
+
+        if (std::abs(balance) > 0.01)
+        {
+            std::cerr << "Error: posting " << getDate() << " " << getDescription() << " is not balanced." << std::endl;
+            exit(1);
+        }
+    }
+
+    // Apply transactions
+    for (const auto & transaction : m_transactions)
+    {
+        const auto & accountName = transaction.getAccountName();
+        const auto & currency = transaction.getCurrency();
+        const auto amount = transaction.getAmount();
+
+        if (accounts.count(accountName) == 0)
+        {
+            Account account(accountName, currency);
+            accounts.emplace(accountName, account);
+        }
+
+        auto & account = accounts.at(accountName);
+
+        if (account.getCurrency() != currency)
+        {
+            std::cerr << "Error: account " << accountName << " uses currency " << account.getCurrency();
+            std::cerr << " but transaction uses currency " << currency << std::endl;
+            exit(1);
+        }
+
+        account.applyAmount(amount);
+    }
+}
+
+
+const std::string & Posting::getDate() const
+{
+    return m_date;
+}
+
+const std::string & Posting::getDescription() const
+{
+    return m_description;
+}
