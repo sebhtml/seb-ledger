@@ -70,11 +70,11 @@ int main(int argc, char ** argv)
 
     std::map<std::string, Account> accounts;
 
-    std::cout << "DEBUG postings= " << postings.size() << std::endl;
+    //std::cout << "DEBUG postings= " << postings.size() << std::endl;
 
     const auto today = getTodayDate();
 
-    std::cout << "DEBUG today= " << today << std::endl;
+    //std::cout << "DEBUG today= " << today << std::endl;
     
     for (auto & posting : postings)
     {

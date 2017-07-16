@@ -79,7 +79,7 @@ const
             std::string date = token;
             std::string description = lineStream.str().substr(date.length());
             
-            std::cout << "DEBUG Posting  date= " << date << "  description= " << description << std::endl;
+            //std::cout << "DEBUG Posting  date= " << date << "  description= " << description << std::endl;
 
             size_t id = postings.size();
 
@@ -122,6 +122,6 @@ const
 
     size_t loadedPostings = postings.size() - numberOfInitialPostings;
 
-    std::cout << "DEBUG loaded " << loadedPostings << " postings from file " << m_file << std::endl;
+    //std::cout << "DEBUG loaded " << loadedPostings << " postings from file " << m_file << std::endl;
 }
 

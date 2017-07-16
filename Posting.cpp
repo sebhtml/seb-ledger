@@ -57,7 +57,7 @@ void Posting::generateTransactions(
     const std::map<std::string, Account> & accounts
 )
 {
-    std::cout << "DEBUG generateTransactions  date= " << getDate() << "  m_transactionLines= " << m_transactionLines.size() << std::endl;
+    //std::cout << "DEBUG generateTransactions  date= " << getDate() << "  m_transactionLines= " << m_transactionLines.size() << std::endl;
 
     for (const auto & transactionLine : m_transactionLines)
     {
@@ -131,12 +131,14 @@ simplifyOperation(const std::string & operation,
 
 void simplify(std::vector<std::string> & equation)
 {
+    /*
     std::cout << "DEBUG simplify";
     for (const auto & i : equation)
     {
         std::cout << " " << i;
     }
     std::cout << std::endl;
+    */
 
     for (int i = 0; i < equation.size(); ++i)
     {
@@ -187,7 +189,7 @@ void simplify(std::vector<std::string> & equation)
         }
     }
 
-    std::cout << "DEBUG start= " << start << "  end= " << end << std::endl;
+    //std::cout << "DEBUG start= " << start << "  end= " << end << std::endl;
 
     std::string operation;
 
@@ -220,7 +222,7 @@ void simplify(std::vector<std::string> & equation)
 
 double parseMathAmount(const std::string & amountString)
 {
-    std::cout << "DEBUG  parseMathAmount  amountString= " << amountString << std::endl;
+    //std::cout << "DEBUG  parseMathAmount  amountString= " << amountString << std::endl;
 
 
     std::ostringstream output;
@@ -247,7 +249,7 @@ double parseMathAmount(const std::string & amountString)
 
     std::string input = output.str();
 
-    std::cout << "DEBUG parseMathAmount  input= \"" << input << "\"" << std::endl;
+    //std::cout << "DEBUG parseMathAmount  input= \"" << input << "\"" << std::endl;
 
     std::vector<std::string> equation;
     std::istringstream inputStream(input);
@@ -286,7 +288,7 @@ void Posting::parseTransaction(
     const std::map<std::string, Account> & accounts
 )
 {
-    std::cout << "DEBUG parseTransaction  transactionLine= " << transactionLine << std::endl;
+    //std::cout << "DEBUG parseTransaction  transactionLine= " << transactionLine << std::endl;
 
     std::string accountName;
 
@@ -338,11 +340,13 @@ void Posting::parseTransaction(
         amountString = amountString.substr(0, amountString.length() - 1);
     }
 
+/*
     std::cout << "DEBUG parseTransaction transactionLine= " << transactionLine;
     std::cout << "  accountName= " << accountName;
     std::cout << "  currency= " << currency;
     std::cout << "  amountString= \"" << amountString << "\"";
     std::cout << std::endl;
+*/
 
     bool isSimpleAmount(true);
     std::set<char> simpleAmountCharacters;
@@ -419,7 +423,7 @@ void Posting::parseTransaction(
     }
     else if (isAutoLine)
     {
-        std::cout << "DEBUG auto-line!" << std::endl;
+        //std::cout << "DEBUG auto-line!" << std::endl;
 
         std::map<std::string, double> balances;
         for (const auto & transaction : m_transactions)
@@ -446,7 +450,7 @@ void Posting::parseTransaction(
 
                 amount = -balance2;
                 currency = currency2;
-                std::cout << "DEBUG auto-balancing, " << accountName << "  " << amount << " " << currency << std::endl;
+                //std::cout << "DEBUG auto-balancing, " << accountName << "  " << amount << " " << currency << std::endl;
 
                 foundUnbalancedCurrency = true;
             }
@@ -465,7 +469,7 @@ void Posting::parseTransaction(
 
     }
 
-    std::cout << "DEBUG EMIT Transaction  " << accountName << "  " << amount << " " << currency << std::endl;
+    //std::cout << "DEBUG EMIT Transaction  " << accountName << "  " << amount << " " << currency << std::endl;
     Transaction transaction(accountName, currency, amount);
     m_transactions.push_back(transaction);
 }
@@ -474,7 +478,7 @@ void Posting::compute(std::map<std::string, Account> & accounts)
 {
     generateTransactions(accounts);
 
-    std::cout << "DEBUG Posting::compute m_transactions = " << m_transactions.size() << std::endl;
+    //std::cout << "DEBUG Posting::compute m_transactions = " << m_transactions.size() << std::endl;
 
     if (not (m_transactions.size() >= 2))
     {
