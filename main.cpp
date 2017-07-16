@@ -121,7 +121,12 @@ int main(int argc, char ** argv)
     {
         const auto & account = iterator.second;
         size_t length = account.getName().length();
-        maxLength = std::max(length, maxLength);
+
+        if (length > maxLength)
+        {
+            maxLength = length;
+            //std::cout << "DEBUG maxLength " << account.getName() << std::endl;
+        }
     }
 
     if (command == "balance")
