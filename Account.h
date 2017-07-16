@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include "Transaction.h"
+#include <list>
 
 class Account
 {
@@ -33,7 +34,7 @@ public:
     const std::string & getCurrency() const;
     double getBalance() const;
     void addTransaction(const Transaction & transaction);
-    const std::vector<const Transaction *> & getTransactions() const;
+    const std::list<const Transaction *> & getTransactions() const;
 
 private:
 
@@ -41,8 +42,7 @@ private:
     std::string m_currency;
     double m_balance;
    
-    // TODO: use std::list
-    std::vector<const Transaction *> m_transactions;
+    std::list<const Transaction *> m_transactions;
 };
 
 #endif // Account_H

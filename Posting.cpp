@@ -270,13 +270,18 @@ double parseMathAmount(const std::string & amountString)
         equation.push_back(atom);
     }
 
-    while (equation.size() != 1)
+    while (1)
     {
         size_t before = equation.size();
         simplify(equation);
 
         if (equation.size() == before)
         {
+            if (equation.size() == 1)
+            {
+                break;
+            }
+
             std::cerr << "Error: simplification failed, input: " << input << std::endl;
             exit(1);
         }

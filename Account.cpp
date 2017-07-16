@@ -55,7 +55,7 @@ void Account::addTransaction(const Transaction & transaction)
 }
 
 
-const std::vector<const Transaction *> & Account::getTransactions() const
+const std::list<const Transaction *> & Account::getTransactions() const
 {
     return m_transactions;
 }
