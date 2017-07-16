@@ -30,7 +30,7 @@ class Posting
 {
 public:
 
-    Posting(const std::string & date, const std::string & description);
+    Posting(size_t id, const std::string & date, const std::string & description);
     ~Posting();
 
     void addTransactionLine(const std::string & transactionLine);
@@ -39,6 +39,7 @@ public:
 
 private:
 
+    size_t m_id;
     std::string m_date;
     std::string m_description;
     std::vector<std::string> m_transactionLines;

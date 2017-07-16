@@ -77,7 +77,9 @@ const
             
             //std::cout << "DEBUG Posting  date= " << date << "  description= " << description << std::endl;
 
-            Posting posting(date, description);
+            size_t id = postings.size();
+
+            Posting posting(id, date, description);
 
             // Load transaction lines.
 

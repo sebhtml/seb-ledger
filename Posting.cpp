@@ -20,8 +20,10 @@
 #include "Posting.h"
 #include <map>
 
-Posting::Posting(const std::string & date, const std::string & description)
-    : m_date(date)
+Posting::Posting(
+    size_t id, const std::string & date, const std::string & description)
+    : m_id(id)
+    , m_date(date)
     , m_description(description)
 {
 }
@@ -39,6 +41,11 @@ void Posting::addTransactionLine(const std::string & transactionLine)
 
 bool Posting::operator<(const Posting & b) const
 {
+    if (m_date == b.m_date)
+    {
+        return m_id < b.m_id;
+    }
+
     return m_date < b.m_date;
 }
 
