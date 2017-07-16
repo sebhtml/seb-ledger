@@ -57,12 +57,17 @@ void Posting::generateTransactions(
     const std::map<std::string, Account> & accounts
 )
 {
-    std::cout << "DEBUG generateTransactions  m_transactionLines= " << m_transactionLines.size() << std::endl;
+    std::cout << "DEBUG generateTransactions  date= " << getDate() << "  m_transactionLines= " << m_transactionLines.size() << std::endl;
 
     for (const auto & transactionLine : m_transactionLines)
     {
         parseTransaction(transactionLine, accounts);
     }
+}
+
+double parseMathAmount(const std::string & amountString)
+{
+    std::cout << "DEBUG  parseMathAmount  amountString= " << amountString << std::endl;
 }
 
 void Posting::parseTransaction(
@@ -91,6 +96,12 @@ void Posting::parseTransaction(
 
         if (token[token.length() - 1] == ')')
         {
+            if (token.length() == 1)
+            {
+                //this is the last parenthesis
+                break;
+            }
+
             // CAD)
             currency = token.substr(0, token.length() - 1);
         }
@@ -101,12 +112,13 @@ void Posting::parseTransaction(
         }
     }
 
-    size_t startOffset = transactionLine.find(accountName) + accountName.length();
-    std::string amountString =
-        transactionLine.substr(startOffset, transactionLine.length() - startOffset - currency.length());
+    std::string amountString = transactionLine;
+    amountString.replace(amountString.find(accountName), accountName.length(), "");
+    amountString.replace(amountString.find(currency), currency.length(), "");
+    
 
     // Trim
-    while (amountString.length() >= 1 and amountString[0] == ' ' or amountString[1] == '\t')
+    while (amountString.length() >= 1 and amountString[0] == ' ' or amountString[0] == '\t')
     {
         amountString = amountString.substr(1);
     }
@@ -118,7 +130,7 @@ void Posting::parseTransaction(
     std::cout << "DEBUG parseTransaction transactionLine= " << transactionLine;
     std::cout << "  accountName= " << accountName;
     std::cout << "  currency= " << currency;
-    std::cout << "  amountString= " << amountString;
+    std::cout << "  amountString= \"" << amountString << "\"";
     std::cout << std::endl;
 
     bool isSimpleAmount(true);
@@ -152,6 +164,39 @@ void Posting::parseTransaction(
     {
         isAutoLine = true;
         isSimpleAmount = false;
+    }
+
+    bool isMathLine(false);
+
+    if (not isSimpleAmount and not isAutoLine)
+    {
+        isMathLine = true;
+        std::set<char> mathAmountCharacters;
+        mathAmountCharacters.insert('-');
+        mathAmountCharacters.insert('0');
+        mathAmountCharacters.insert('1');
+        mathAmountCharacters.insert('2');
+        mathAmountCharacters.insert('3');
+        mathAmountCharacters.insert('4');
+        mathAmountCharacters.insert('5');
+        mathAmountCharacters.insert('6');
+        mathAmountCharacters.insert('7');
+        mathAmountCharacters.insert('8');
+        mathAmountCharacters.insert('9');
+        mathAmountCharacters.insert('.');
+        mathAmountCharacters.insert(' ');
+        mathAmountCharacters.insert('(');
+        mathAmountCharacters.insert(')');
+
+        for (size_t i = 0; i < amountString.length(); ++i)
+        {
+            char character = amountString[i];
+            if (mathAmountCharacters.count(character) == 0)
+            {
+                isMathLine = false;
+                break;
+            }
+        }
     }
 
     double amount;
@@ -195,13 +240,21 @@ void Posting::parseTransaction(
                 foundUnbalancedCurrency = true;
             }
         }
+
+        if (not foundUnbalancedCurrency)
+        {
+            // Output any line.
+            amount = 0;
+            currency = m_transactions.front().getCurrency();
+        }
     }
     else
     {
-        std::cerr << "Error: unsupported amountString: " << amountString << std::endl;
-        exit(1);
+        amount = parseMathAmount(amountString);
+
     }
 
+    std::cout << "DEBUG EMIT Transaction  " << accountName << "  " << amount << " " << currency << std::endl;
     Transaction transaction(accountName, currency, amount);
     m_transactions.push_back(transaction);
 }
