@@ -29,7 +29,7 @@ Posting with a account balance query
 ------------------------------------
 
 ```
-2017-07-15
+2017-07-15 Interests
     mortgage  (mortgage*0.03)
     auto
 ```
