@@ -154,13 +154,15 @@ int main(int argc, char ** argv)
 
                 for (const auto & transaction : account.getTransactions())
                 {
-                    // TODO: use iomanip
-                    balance += transaction->getAmount();
+                    // : use iomanip
+                    const auto amount = transaction->getAmount();
+                    balance += amount;
                     std::cout << transaction->getDate() << "  ";
-                    std::cout << transaction->getAccountName();
-                    std::cout << "  " << transaction->getAmount();
+                    std::cout << std::left << std::setfill(' ') << std::setw(maxLength) << account.getName();
+                    std::cout << "  " << std::right << std::setw(9) << std::fixed << std::setprecision(2) << amount;
                     std::cout << " " << transaction->getCurrency();
-                    std::cout << "  " << balance << " " << transaction->getCurrency();
+                    std::cout << "  " << std::right << std::setw(9) << std::fixed << std::setprecision(2) << balance;
+                    std::cout << " " << transaction->getCurrency();
                     std::cout << "  " << transaction->getDescription();
                     std::cout << std::endl;
                 }
