@@ -68,6 +68,36 @@ void Posting::generateTransactions(
 double parseMathAmount(const std::string & amountString)
 {
     std::cout << "DEBUG  parseMathAmount  amountString= " << amountString << std::endl;
+
+    double result = 0;
+
+    std::ostringstream output;
+    std::set<char> specialCharacters;
+    specialCharacters.insert('(');
+    specialCharacters.insert(')');
+    specialCharacters.insert('+');
+    specialCharacters.insert('-');
+    specialCharacters.insert('/');
+    specialCharacters.insert('*');
+
+    for (size_t i = 0; i < amountString.length(); ++i)
+    {
+        char character = amountString[i];
+        if (specialCharacters.count(character))
+        {
+            output << " " << character << " ";
+        }
+        else
+        {
+            output << character;
+        }
+    }
+
+    std::string input = output.str();
+
+    std::cout << "DEBUG parseMathAmount  input= \"" << input << "\"" << std::endl;
+
+    return result;
 }
 
 void Posting::parseTransaction(
