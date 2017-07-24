@@ -1,0 +1,19 @@
+
+2017-07-24 Potatoes
+    store   10.00 CAD
+    seb    -10.00 CAD
+    max-part  (10.00 / 2 CAD)
+    dummy
+
+2017-07-01 Loan
+    loan   1000.00 CAD
+    bank  -1000.00 CAD
+
+2017-07-01 Interests
+    loan  (loan * 0.03 / (12 * 2) CAD)
+    dummy
+
+2017-07-15 Interests
+    loan  (loan * 0.03 / (12 * 2) CAD)
+    dummy
+
