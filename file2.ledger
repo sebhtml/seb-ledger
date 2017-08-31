@@ -17,3 +17,7 @@
     loan  (loan * 0.03 / (12 * 2) CAD)
     dummy
 
+2017-08-15 Interests
+    loan  (loan * (1.03^(1/(12*2)) - 1) CAD)
+    dummy
+

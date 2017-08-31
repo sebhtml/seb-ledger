@@ -23,6 +23,7 @@
 #include <cmath>
 #include <sstream>
 #include <set>
+#include <iomanip>
 
 Posting::Posting(
     size_t id, const std::string & date, const std::string & description)
@@ -83,6 +84,10 @@ double generateResult(double a, double b, const std::string & operation)
     {
         return a - b;
     }
+    if (operation == "^")
+    {
+        return std::pow(a, b);
+    }
 
     std::cerr << "Error: invalid operation: " << operation << std::endl;
     exit(1);
@@ -114,7 +119,7 @@ simplifyOperation(const std::string & operation,
             rightStream >> right;
             double result = generateResult(left, right, operation);
             std::ostringstream resultStream;
-            resultStream << result;
+            resultStream << std::setprecision(128) << /**/ result;
 
             std::vector<std::string> newEquation;
             for (int j = 0; j <= i - 2; ++j)
@@ -150,7 +155,7 @@ bool simplifyEquation(std::vector<std::string> & equation,
     for (int i = 0; i < equation.size(); ++i)
     {
         // Fetch account balance
-        if (accounts.count(equation[i]))
+        if (accounts.count(equation[i]) == 1)
         {
             std::vector<std::string> newequation;
             for (int j = 0; j < i ; ++j)
@@ -224,6 +229,17 @@ bool simplifyEquation(std::vector<std::string> & equation,
 
     std::string operation;
 
+    // Priority: ^, *, /, +, -
+    for (size_t i = start; i <= end; i++)
+    {
+        if (equation[i] == "^")
+        {
+            operation = equation[i];
+            break;
+        }
+    }
+
+
     for (size_t i = start; i <= end; i++)
     {
         if (equation[i] == "*" or equation[i] == "/")
@@ -269,6 +285,7 @@ double parseAmount(const std::string & amountString,
     specialCharacters.insert('-');
     specialCharacters.insert('/');
     specialCharacters.insert('*');
+    specialCharacters.insert('^');
 
     for (size_t i = 0; i < amountString.length(); ++i)
     {
