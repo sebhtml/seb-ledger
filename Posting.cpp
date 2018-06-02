@@ -25,6 +25,8 @@
 #include <set>
 #include <iomanip>
 
+#define MINIMUM_UNBALANCED_AMOUNT 0.01
+
 Posting::Posting(
     size_t id, const std::string & date, const std::string & description)
     : m_id(id)
@@ -553,7 +555,7 @@ void Posting::parseTransaction(
             const auto & currency2 = iterator.first;
             const auto & balance2 = iterator.second;
 
-            if (std::abs(balance2) >= MINIMUM_BALANCE)
+            if (std::abs(balance2) >= MINIMUM_UNBALANCED_AMOUNT)
             {
                 if (foundUnbalancedCurrency)
                 {
@@ -613,7 +615,7 @@ void Posting::compute(std::map<std::string, Account> & accounts)
         const auto & currency = iterator.first;
         const auto & balance = iterator.second;
 
-        if (std::abs(balance) >= MINIMUM_BALANCE)
+        if (std::abs(balance) >= MINIMUM_UNBALANCED_AMOUNT)
         {
             std::cerr << "Error: posting " << getDate() << " " << getDescription() << " is not balanced." << std::endl;
             exit(1);
