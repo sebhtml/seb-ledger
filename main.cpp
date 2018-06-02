@@ -25,6 +25,7 @@
 #include <ctime>
 #include <iomanip>
 
+
 std::string getTodayDate()
 {
     time_t t = time(0);   // get time now
@@ -137,8 +138,10 @@ int main(int argc, char ** argv)
             const auto balance = account.getBalance();
 
             if (
-                (selectedAccountName == "" and std::abs(balance) >= MINIMUM_BALANCE)
+                    // Show all accounts.
+                (selectedAccountName == "")
                  or 
+                 // Show only this account.
                 account.getName() == selectedAccountName)
             {
 

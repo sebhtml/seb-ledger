@@ -26,8 +26,6 @@
 #include <fstream>
 #include <vector>
 
-#define MINIMUM_BALANCE 0.01
-
 class Posting
 {
 public:
